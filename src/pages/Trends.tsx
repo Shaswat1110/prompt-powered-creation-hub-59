@@ -16,7 +16,10 @@ import {
   Line,
   CartesianGrid,
   AreaChart,
-  Area
+  Area,
+  Pie,
+  Cell,
+  PieChart as RechartsPieChart
 } from "recharts";
 import { monthlySpending, categorySpending } from "@/services/mockData";
 
