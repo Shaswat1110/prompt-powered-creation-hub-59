@@ -1,3 +1,4 @@
+
 import { Transaction, Category, CategorySpending, MonthlySpending, SavingsTip, Budget } from "@/types";
 
 // Empty initial transactions
@@ -36,6 +37,45 @@ export const monthlySpending: MonthlySpending[] = [];
 
 // Empty initial category spending
 export const categorySpending: CategorySpending[] = [];
+
+// Add the missing savingsTips array
+export const savingsTips: SavingsTip[] = [
+  {
+    id: "1",
+    title: "Reduce Coffee Spending",
+    description: "Try brewing coffee at home instead of buying at coffee shops. This can save you a significant amount each month.",
+    potentialSavings: 75,
+    difficulty: "easy"
+  },
+  {
+    id: "2",
+    title: "Optimize Streaming Services",
+    description: "Review your streaming subscriptions and cancel ones you don't use regularly. Consider rotating services monthly.",
+    potentialSavings: 35,
+    difficulty: "easy"
+  },
+  {
+    id: "3",
+    title: "Meal Planning",
+    description: "Plan your meals for the week and shop with a grocery list to reduce food waste and impulse purchases.",
+    potentialSavings: 120,
+    difficulty: "medium"
+  },
+  {
+    id: "4",
+    title: "Public Transportation",
+    description: "Use public transportation or carpooling options when possible instead of driving alone.",
+    potentialSavings: 150,
+    difficulty: "medium"
+  },
+  {
+    id: "5",
+    title: "Refinance Loans",
+    description: "Consider refinancing high-interest loans or consolidating debt to reduce monthly payments.",
+    potentialSavings: 200,
+    difficulty: "hard"
+  }
+];
 
 // Update categorizeTransaction function with new categories
 export function categorizeTransaction(description: string): Category {
