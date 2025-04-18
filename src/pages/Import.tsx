@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { FileUp, FileText, CheckCircle, AlertCircle } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -30,7 +29,6 @@ const Import = () => {
     setLoading(true);
     setProgress(0);
 
-    // Simulate file processing
     const interval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
@@ -53,7 +51,6 @@ const Import = () => {
     setLoading(true);
     setProgress(0);
 
-    // Simulate connection process
     const interval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
@@ -65,6 +62,33 @@ const Import = () => {
         return prev + 10;
       });
     }, 300);
+  };
+
+  const handleFileUpload = async (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      if (event.target?.result) {
+        const content = event.target.result as string;
+        const lines = content.split('\n');
+        
+        const transactions = lines.slice(1).map(line => {
+          const [date, description, amount] = line.split(',');
+          const category = categorizeTransaction(description);
+          
+          return {
+            date: date,
+            description: description,
+            amount: parseFloat(amount),
+            category: category
+          };
+        }).filter(t => !isNaN(t.amount));
+
+        console.log('Parsed transactions:', transactions);
+        toast.success(`Successfully parsed ${transactions.length} transactions`);
+      }
+    };
+    
+    reader.readAsText(file);
   };
 
   const banks = [

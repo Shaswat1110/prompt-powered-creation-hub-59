@@ -1,163 +1,90 @@
-
 import { Transaction, Category, CategorySpending, MonthlySpending, SavingsTip, Budget } from "@/types";
 
-// Mock transactions data
-export const transactions: Transaction[] = [
-  {
-    id: "t1",
-    date: "2025-04-15",
-    description: "Grocery Store",
-    amount: 85.42,
-    category: "groceries",
-  },
-  {
-    id: "t2",
-    date: "2025-04-14",
-    description: "Netflix Subscription",
-    amount: 15.99,
-    category: "entertainment",
-  },
-  {
-    id: "t3",
-    date: "2025-04-13",
-    description: "Electric Bill",
-    amount: 95.20,
-    category: "utilities",
-  },
-  {
-    id: "t4",
-    date: "2025-04-12",
-    description: "Gas Station",
-    amount: 45.67,
-    category: "transport",
-  },
-  {
-    id: "t5",
-    date: "2025-04-10",
-    description: "Rent Payment",
-    amount: 1200.00,
-    category: "housing",
-  },
-  {
-    id: "t6",
-    date: "2025-04-08",
-    description: "Dinner at Restaurant",
-    amount: 65.30,
-    category: "food",
-  },
-  {
-    id: "t7",
-    date: "2025-04-07",
-    description: "Pharmacy",
-    amount: 22.15,
-    category: "health",
-  },
-  {
-    id: "t8",
-    date: "2025-04-05",
-    description: "Clothing Store",
-    amount: 87.95,
-    category: "personal",
-  },
-  {
-    id: "t9",
-    date: "2025-04-03",
-    description: "Online Course",
-    amount: 49.99,
-    category: "education",
-  },
-  {
-    id: "t10",
-    date: "2025-04-01",
-    description: "Coffee Shop",
-    amount: 4.75,
-    category: "food",
-  },
-];
+// Empty initial transactions
+export const transactions: Transaction[] = [];
 
-// Category definitions
+// Updated category definitions with new categories
 export const categoryDetails = {
-  groceries: { name: "groceries", color: "bg-budget-grocery", icon: "ShoppingCart", displayName: "Groceries" },
-  utilities: { name: "utilities", color: "bg-budget-utilities", icon: "Zap", displayName: "Utilities" },
-  entertainment: { name: "entertainment", color: "bg-budget-entertainment", icon: "Film", displayName: "Entertainment" },
-  transport: { name: "transport", color: "bg-budget-transport", icon: "Car", displayName: "Transport" },
-  housing: { name: "housing", color: "bg-budget-housing", icon: "Home", displayName: "Housing" },
-  food: { name: "food", color: "bg-budget-food", icon: "Utensils", displayName: "Food & Dining" },
-  health: { name: "health", color: "bg-budget-health", icon: "Activity", displayName: "Healthcare" },
-  personal: { name: "personal", color: "bg-budget-personal", icon: "User", displayName: "Personal" },
-  education: { name: "education", color: "bg-budget-education", icon: "BookOpen", displayName: "Education" },
-  other: { name: "other", color: "bg-budget-other", icon: "Coffee", displayName: "Other" },
+  "Shopping": { name: "Shopping", color: "bg-budget-primary", icon: "ShoppingBag", displayName: "Shopping" },
+  "Mortgage & Rent": { name: "Mortgage & Rent", color: "bg-budget-housing", icon: "Home", displayName: "Mortgage & Rent" },
+  "Restaurants": { name: "Restaurants", color: "bg-budget-food", icon: "Utensils", displayName: "Restaurants" },
+  "Credit Card Payment": { name: "Credit Card Payment", color: "bg-budget-finance", icon: "CreditCard", displayName: "Credit Card Payment" },
+  "Movies & DVDs": { name: "Movies & DVDs", color: "bg-budget-entertainment", icon: "Film", displayName: "Movies & DVDs" },
+  "Home Improvement": { name: "Home Improvement", color: "bg-budget-housing", icon: "Wrench", displayName: "Home Improvement" },
+  "Utilities": { name: "Utilities", color: "bg-budget-utilities", icon: "Zap", displayName: "Utilities" },
+  "Music": { name: "Music", color: "bg-budget-entertainment", icon: "Music", displayName: "Music" },
+  "Mobile Phone": { name: "Mobile Phone", color: "bg-budget-utilities", icon: "Smartphone", displayName: "Mobile Phone" },
+  "Gas & Fuel": { name: "Gas & Fuel", color: "bg-budget-transport", icon: "Fuel", displayName: "Gas & Fuel" },
+  "Groceries": { name: "Groceries", color: "bg-budget-grocery", icon: "ShoppingCart", displayName: "Groceries" },
+  "Paycheck": { name: "Paycheck", color: "bg-budget-income", icon: "Wallet", displayName: "Paycheck" },
+  "Fast Food": { name: "Fast Food", color: "bg-budget-food", icon: "Pizza", displayName: "Fast Food" },
+  "Coffee Shops": { name: "Coffee Shops", color: "bg-budget-food", icon: "Coffee", displayName: "Coffee Shops" },
+  "Internet": { name: "Internet", color: "bg-budget-utilities", icon: "Wifi", displayName: "Internet" },
+  "Haircut": { name: "Haircut", color: "bg-budget-personal", icon: "Scissors", displayName: "Haircut" },
+  "Alcohol & Bars": { name: "Alcohol & Bars", color: "bg-budget-entertainment", icon: "Wine", displayName: "Alcohol & Bars" },
+  "Auto Insurance": { name: "Auto Insurance", color: "bg-budget-transport", icon: "Shield", displayName: "Auto Insurance" },
+  "Entertainment": { name: "Entertainment", color: "bg-budget-entertainment", icon: "Gamepad2", displayName: "Entertainment" },
+  "Food & Dining": { name: "Food & Dining", color: "bg-budget-food", icon: "UtensilsCrossed", displayName: "Food & Dining" },
+  "Television": { name: "Television", color: "bg-budget-entertainment", icon: "Tv", displayName: "Television" },
+  "Electronics & Software": { name: "Electronics & Software", color: "bg-budget-personal", icon: "Laptop", displayName: "Electronics & Software" },
+  "Transport": { name: "Transport", color: "bg-budget-transport", icon: "Car", displayName: "Transport" },
+  "Medical": { name: "Medical", color: "bg-budget-health", icon: "Stethoscope", displayName: "Medical" }
 };
 
-// Monthly spending data for charts
-export const monthlySpending: MonthlySpending[] = [
-  { month: "Jan", amount: 2580 },
-  { month: "Feb", amount: 2350 },
-  { month: "Mar", amount: 2790 },
-  { month: "Apr", amount: 2670 },
-  { month: "May", amount: 2450 },
-  { month: "Jun", amount: 2380 },
-];
+// Empty initial monthly spending data
+export const monthlySpending: MonthlySpending[] = [];
 
-// Category spending breakdown
-export const categorySpending: CategorySpending[] = [
-  { category: "housing", amount: 1200, percentage: 45 },
-  { category: "groceries", amount: 450, percentage: 17 },
-  { category: "utilities", amount: 320, percentage: 12 },
-  { category: "transport", amount: 250, percentage: 9 },
-  { category: "entertainment", amount: 180, percentage: 7 },
-  { category: "food", amount: 120, percentage: 4 },
-  { category: "health", amount: 80, percentage: 3 },
-  { category: "other", amount: 70, percentage: 3 },
-];
+// Empty initial category spending
+export const categorySpending: CategorySpending[] = [];
 
-// Savings tips
-export const savingsTips: SavingsTip[] = [
-  {
-    id: "tip1",
-    title: "Reduce Dining Out",
-    description: "You've spent $120 on dining out this month. Try cooking at home more often to save money.",
-    potentialSavings: 60,
-    difficulty: "medium",
-  },
-  {
-    id: "tip2",
-    title: "Entertainment Subscriptions",
-    description: "Review your entertainment subscriptions and consider canceling those you don't use often.",
-    potentialSavings: 30,
-    difficulty: "easy",
-  },
-  {
-    id: "tip3",
-    title: "Utility Savings",
-    description: "Your electricity bill seems higher than average. Try turning off lights and electronics when not in use.",
-    potentialSavings: 25,
-    difficulty: "easy",
-  },
-  {
-    id: "tip4",
-    title: "Grocery Shopping Strategy",
-    description: "Create a shopping list before going to the grocery store to avoid impulse buys.",
-    potentialSavings: 50,
-    difficulty: "medium",
-  },
-  {
-    id: "tip5",
-    title: "Transportation Alternatives",
-    description: "Consider using public transportation or carpooling for your daily commute.",
-    potentialSavings: 45,
-    difficulty: "hard",
-  },
-];
-
-// Budget data
-export const budgets: Budget[] = [
-  { category: "groceries", limit: 500, spent: 450 },
-  { category: "utilities", limit: 350, spent: 320 },
-  { category: "entertainment", limit: 200, spent: 180 },
-  { category: "transport", limit: 300, spent: 250 },
-  { category: "food", limit: 150, spent: 120 },
-];
+// Update categorizeTransaction function with new categories
+export function categorizeTransaction(description: string): Category {
+  description = description.toLowerCase();
+  
+  if (description.includes("shop") || description.includes("store")) {
+    return "Shopping";
+  } else if (description.includes("rent") || description.includes("mortgage")) {
+    return "Mortgage & Rent";
+  } else if (description.includes("restaurant")) {
+    return "Restaurants";
+  } else if (description.includes("credit") || description.includes("card payment")) {
+    return "Credit Card Payment";
+  } else if (description.includes("movie") || description.includes("netflix")) {
+    return "Movies & DVDs";
+  } else if (description.includes("home") || description.includes("repair")) {
+    return "Home Improvement";
+  } else if (description.includes("electric") || description.includes("water") || description.includes("gas bill")) {
+    return "Utilities";
+  } else if (description.includes("spotify") || description.includes("music")) {
+    return "Music";
+  } else if (description.includes("phone") || description.includes("mobile")) {
+    return "Mobile Phone";
+  } else if (description.includes("gas station") || description.includes("fuel")) {
+    return "Gas & Fuel";
+  } else if (description.includes("grocery") || description.includes("supermarket")) {
+    return "Groceries";
+  } else if (description.includes("salary") || description.includes("paycheck")) {
+    return "Paycheck";
+  } else if (description.includes("mcdonalds") || description.includes("burger")) {
+    return "Fast Food";
+  } else if (description.includes("starbucks") || description.includes("coffee")) {
+    return "Coffee Shops";
+  } else if (description.includes("internet") || description.includes("wifi")) {
+    return "Internet";
+  } else if (description.includes("haircut") || description.includes("salon")) {
+    return "Haircut";
+  } else if (description.includes("bar") || description.includes("pub")) {
+    return "Alcohol & Bars";
+  } else if (description.includes("insurance") && description.includes("auto")) {
+    return "Auto Insurance";
+  } else if (description.includes("doctor") || description.includes("hospital")) {
+    return "Medical";
+  } else if (description.includes("bus") || description.includes("train")) {
+    return "Transport";
+  } else {
+    return "Shopping"; // Default category
+  }
+}
 
 // Get transactions with pagination
 export function getTransactions(page: number = 1, limit: number = 5): Transaction[] {
@@ -169,31 +96,4 @@ export function getTransactions(page: number = 1, limit: number = 5): Transactio
 // Get total number of transactions
 export function getTotalTransactions(): number {
   return transactions.length;
-}
-
-// Auto-categorize a transaction based on description
-export function categorizeTransaction(description: string): Category {
-  description = description.toLowerCase();
-  
-  if (description.includes("grocery") || description.includes("supermarket")) {
-    return "groceries";
-  } else if (description.includes("netflix") || description.includes("cinema") || description.includes("movie")) {
-    return "entertainment";
-  } else if (description.includes("electric") || description.includes("water") || description.includes("gas") || description.includes("bill")) {
-    return "utilities";
-  } else if (description.includes("gas station") || description.includes("uber") || description.includes("lyft")) {
-    return "transport";
-  } else if (description.includes("rent") || description.includes("mortgage")) {
-    return "housing";
-  } else if (description.includes("restaurant") || description.includes("cafe") || description.includes("coffee")) {
-    return "food";
-  } else if (description.includes("pharmacy") || description.includes("doctor") || description.includes("hospital")) {
-    return "health";
-  } else if (description.includes("clothing") || description.includes("salon")) {
-    return "personal";
-  } else if (description.includes("course") || description.includes("book") || description.includes("school")) {
-    return "education";
-  } else {
-    return "other";
-  }
 }

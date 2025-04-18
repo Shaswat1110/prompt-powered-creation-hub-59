@@ -1,4 +1,3 @@
-
 export interface Transaction {
   id: string;
   date: string;
@@ -9,16 +8,30 @@ export interface Transaction {
 }
 
 export type Category = 
-  | "groceries" 
-  | "utilities" 
-  | "entertainment" 
-  | "transport" 
-  | "housing" 
-  | "food" 
-  | "health" 
-  | "personal" 
-  | "education" 
-  | "other";
+  | "Shopping"
+  | "Mortgage & Rent"
+  | "Restaurants"
+  | "Credit Card Payment"
+  | "Movies & DVDs"
+  | "Home Improvement"
+  | "Utilities"
+  | "Music"
+  | "Mobile Phone"
+  | "Gas & Fuel"
+  | "Groceries"
+  | "Paycheck"
+  | "Fast Food"
+  | "Coffee Shops"
+  | "Internet"
+  | "Haircut"
+  | "Alcohol & Bars"
+  | "Auto Insurance"
+  | "Entertainment"
+  | "Food & Dining"
+  | "Television"
+  | "Electronics & Software"
+  | "Transport"
+  | "Medical";
 
 export interface CategoryDetails {
   name: Category;
