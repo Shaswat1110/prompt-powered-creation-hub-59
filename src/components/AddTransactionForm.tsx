@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
@@ -15,7 +16,6 @@ import { Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const AddTransactionForm: React.FC = () => {
-  const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState<Category>("Shopping");
   const [isExpense, setIsExpense] = useState(true);
@@ -27,7 +27,7 @@ const AddTransactionForm: React.FC = () => {
     e.preventDefault();
     
     // Validate form
-    if (!description || !amount || !category || !date) {
+    if (!amount || !category || !date) {
       toast({
         title: "Error",
         description: "Please fill in all fields",
@@ -48,14 +48,13 @@ const AddTransactionForm: React.FC = () => {
 
     // Add the transaction with the selected date
     addTransaction({
-      description,
+      description: category, // Use category as a default description
       amount: isExpense ? parsedAmount : -parsedAmount, // Negative for income
       category,
       date: date.toISOString() // Use the selected date
     });
 
     // Reset form
-    setDescription("");
     setAmount("");
     setCategory("Shopping");
     setIsExpense(true);
@@ -121,19 +120,6 @@ const AddTransactionForm: React.FC = () => {
                 />
               </PopoverContent>
             </Popover>
-          </div>
-          
-          <div className="space-y-2">
-            <label htmlFor="description" className="text-sm font-medium">
-              Description
-            </label>
-            <Input
-              id="description"
-              placeholder="What was this for?"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              required
-            />
           </div>
           
           <div className="space-y-2">
