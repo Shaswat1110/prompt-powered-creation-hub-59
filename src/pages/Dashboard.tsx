@@ -23,7 +23,7 @@ import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, PieChart, Pie, Cell, 
 import { format } from "date-fns";
 
 const Dashboard = () => {
-  const { transactions, monthlyIncome } = useTransactions();
+  const { transactions, monthlyIncome, setMonthlyIncome } = useTransactions();
   
   // Get current month and year
   const currentDate = new Date();
@@ -33,11 +33,16 @@ const Dashboard = () => {
   // Filter transactions for current month only
   const currentMonthTransactions = useMemo(() => {
     return transactions.filter(transaction => {
-      const transactionDate = new Date(transaction.date);
-      return (
-        transactionDate.getMonth() === currentMonth &&
-        transactionDate.getFullYear() === currentYear
-      );
+      try {
+        const transactionDate = new Date(transaction.date);
+        return (
+          transactionDate.getMonth() === currentMonth &&
+          transactionDate.getFullYear() === currentYear
+        );
+      } catch (error) {
+        console.warn("Invalid transaction date", transaction.date);
+        return false;
+      }
     });
   }, [transactions, currentMonth, currentYear]);
   
@@ -135,7 +140,6 @@ const Dashboard = () => {
           <p className="text-gray-500 dark:text-gray-400 mt-1">Your financial overview</p>
         </div>
         <div className="flex items-center gap-4">
-          <MonthlyIncomeDialog />
           <div className="bg-budget-primary/10 dark:bg-blue-900/30 px-4 py-2 rounded-md">
             <span className="text-budget-primary dark:text-blue-400 font-medium">
               {new Date().toLocaleDateString('en-US', { 
@@ -146,6 +150,18 @@ const Dashboard = () => {
             </span>
           </div>
         </div>
+      </div>
+      
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+        <MonthlyIncomeDialog />
+        {monthlyIncome > 0 && (
+          <div className="mt-3 md:mt-0 bg-green-100 dark:bg-green-900/30 px-4 py-2 rounded-md flex items-center">
+            <Wallet className="mr-2 h-4 w-4 text-green-600 dark:text-green-400" />
+            <span className="text-green-600 dark:text-green-400 font-medium">
+              This Month's Savings: {formatCurrency(monthlyIncome - totalSpent)}
+            </span>
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

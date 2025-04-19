@@ -1,23 +1,15 @@
 
 import React, { useState } from "react";
-import { FileUp, CheckCircle, AlertCircle } from "lucide-react";
+import { FileUp } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
+import BankSelect from "./BankSelect";
+import ConnectionProgress from "./ConnectionProgress";
+import SecurityInfo from "./SecurityInfo";
 
-const banks = [
-  { id: "chase", name: "Chase Bank" },
-  { id: "bofa", name: "Bank of America" },
-  { id: "wells", name: "Wells Fargo" },
-  { id: "citi", name: "Citibank" },
-  { id: "discover", name: "Discover" },
-  { id: "capital", name: "Capital One" },
-];
-
-const BankConnectCard = () => {
+const BankConnectCard: React.FC = () => {
   const [selectedBank, setSelectedBank] = useState<string>("none");
   const [loading, setLoading] = useState<boolean>(false);
   const [progress, setProgress] = useState<number>(0);
@@ -57,31 +49,9 @@ const BankConnectCard = () => {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          <div>
-            <label className="text-sm font-medium">Select Your Bank</label>
-            <Select value={selectedBank} onValueChange={setSelectedBank}>
-              <SelectTrigger>
-                <SelectValue placeholder="Choose a bank..." />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="none">Choose a bank...</SelectItem>
-                {banks.map((bank) => (
-                  <SelectItem key={bank.id} value={bank.id}>
-                    {bank.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          <BankSelect selectedBank={selectedBank} setSelectedBank={setSelectedBank} />
 
-          {loading && (
-            <div className="space-y-2">
-              <Progress value={progress} />
-              <p className="text-sm text-gray-500 text-center">
-                Connecting to bank... {progress}%
-              </p>
-            </div>
-          )}
+          {loading && <ConnectionProgress progress={progress} type="bank" />}
 
           <Button 
             className="w-full bg-budget-primary hover:bg-budget-primary/90" 
@@ -93,27 +63,7 @@ const BankConnectCard = () => {
 
           <Separator className="my-4" />
 
-          <div>
-            <h3 className="text-sm font-medium mb-2">Security Information</h3>
-            <div className="space-y-2 text-sm text-gray-600">
-              <div className="flex gap-2">
-                <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0 mt-0.5" />
-                <p>Bank-level 256-bit encryption</p>
-              </div>
-              <div className="flex gap-2">
-                <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0 mt-0.5" />
-                <p>Read-only access to your transactions</p>
-              </div>
-              <div className="flex gap-2">
-                <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0 mt-0.5" />
-                <p>Your credentials are never stored</p>
-              </div>
-              <div className="flex gap-2">
-                <AlertCircle className="h-4 w-4 text-amber-500 flex-shrink-0 mt-0.5" />
-                <p>You can disconnect at any time</p>
-              </div>
-            </div>
-          </div>
+          <SecurityInfo />
         </div>
       </CardContent>
     </Card>

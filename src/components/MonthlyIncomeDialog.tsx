@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,11 @@ const MonthlyIncomeDialog = () => {
   const [income, setIncome] = useState(monthlyIncome.toString());
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
+  
+  // Update local state if context value changes
+  useEffect(() => {
+    setIncome(monthlyIncome.toString());
+  }, [monthlyIncome]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
