@@ -22,7 +22,6 @@ import {
 } from "recharts";
 import { useTransactions } from "@/context/TransactionContext";
 import { CategorySpending } from "@/types";
-import MonthlyIncomeDialog from "@/components/MonthlyIncomeDialog";
 
 const Trends = () => {
   const { transactions, monthlyIncome } = useTransactions();
@@ -92,7 +91,6 @@ const Trends = () => {
           <h1 className="text-3xl font-bold text-gray-900">Spending Trends</h1>
           <p className="text-gray-500 mt-1">Visualize and analyze your spending patterns</p>
         </div>
-        <MonthlyIncomeDialog />
       </div>
 
       <Tabs defaultValue="monthly" className="w-full">
