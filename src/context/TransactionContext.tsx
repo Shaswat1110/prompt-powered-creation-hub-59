@@ -1,11 +1,10 @@
-
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { Transaction, Category } from "@/types";
 import { useAuth } from "./AuthContext";
 
 interface TransactionContextType {
   transactions: Transaction[];
-  addTransaction: (transaction: Omit<Transaction, "id" | "date">) => void;
+  addTransaction: (transaction: Omit<Transaction, "id">) => void;
   clearTransactions: () => void;
 }
 
@@ -15,7 +14,6 @@ export const TransactionProvider = ({ children }: { children: React.ReactNode })
   const { user } = useAuth();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
 
-  // Load user's transactions when component mounts or user changes
   useEffect(() => {
     if (user) {
       const storedTransactions = localStorage.getItem(`transactions_${user.id}`);
@@ -29,17 +27,15 @@ export const TransactionProvider = ({ children }: { children: React.ReactNode })
     }
   }, [user]);
 
-  // Save transactions to localStorage when they change
   useEffect(() => {
     if (user) {
       localStorage.setItem(`transactions_${user.id}`, JSON.stringify(transactions));
     }
   }, [transactions, user]);
 
-  const addTransaction = (transactionData: Omit<Transaction, "id" | "date">) => {
+  const addTransaction = (transactionData: Omit<Transaction, "id">) => {
     const newTransaction: Transaction = {
       id: Math.random().toString(36).substr(2, 9),
-      date: new Date().toISOString(),
       ...transactionData
     };
 
