@@ -1,13 +1,16 @@
-
 import React from "react";
 import { LightbulbIcon, TrendingDown, DollarSign, Star } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { savingsTips } from "@/services/mockData";
+import { savingsTipCategories } from "@/services/mockData";
+import { useTransactions } from "@/context/TransactionContext";
+import { startOfMonth, endOfMonth, subMonths } from "date-fns";
 
 const Savings = () => {
+  const { transactions, monthlyIncome } = useTransactions();
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -15,6 +18,91 @@ const Savings = () => {
     }).format(amount);
   };
 
+  const getCurrentMonthSpending = () => {
+    const now = new Date();
+    const start = startOfMonth(now);
+    const end = endOfMonth(now);
+    
+    return transactions.reduce((acc, transaction) => {
+      const transactionDate = new Date(transaction.date);
+      if (transactionDate >= start && transactionDate <= end && transaction.amount > 0) {
+        acc[transaction.category] = (acc[transaction.category] || 0) + transaction.amount;
+      }
+      return acc;
+    }, {} as Record<string, number>);
+  };
+
+  const getPreviousMonthSpending = () => {
+    const lastMonth = subMonths(new Date(), 1);
+    const start = startOfMonth(lastMonth);
+    const end = endOfMonth(lastMonth);
+    
+    return transactions.reduce((acc, transaction) => {
+      const transactionDate = new Date(transaction.date);
+      if (transactionDate >= start && transactionDate <= end && transaction.amount > 0) {
+        acc[transaction.category] = (acc[transaction.category] || 0) + transaction.amount;
+      }
+      return acc;
+    }, {} as Record<string, number>);
+  };
+
+  const generateSavingsTips = () => {
+    const currentSpending = getCurrentMonthSpending();
+    const previousSpending = getPreviousMonthSpending();
+    const tips: Array<{
+      id: string;
+      title: string;
+      description: string;
+      potentialSavings: number;
+      difficulty: "easy" | "medium" | "hard";
+    }> = [];
+
+    Object.entries(savingsTipCategories.highSpending).forEach(([key, category]) => {
+      const totalCurrentSpending = category.categories.reduce(
+        (sum, cat) => sum + (currentSpending[cat] || 0),
+        0
+      );
+
+      const totalPreviousSpending = category.categories.reduce(
+        (sum, cat) => sum + (previousSpending[cat] || 0),
+        0
+      );
+
+      if (totalCurrentSpending > totalPreviousSpending || totalCurrentSpending > (monthlyIncome * 0.2)) {
+        tips.push({
+          id: key,
+          title: category.title,
+          description: category.description,
+          potentialSavings: Math.round(totalCurrentSpending * 0.3),
+          difficulty: category.difficulty
+        });
+      }
+    });
+
+    const hasRecurringPayments = Object.entries(currentSpending).some(
+      ([category, amount]) => Math.abs((previousSpending[category] || 0) - amount) < 5
+    );
+
+    if (hasRecurringPayments) {
+      tips.push({
+        id: "recurring",
+        ...savingsTipCategories.recurring,
+        potentialSavings: 50
+      });
+    }
+
+    if (monthlyIncome > 0 && tips.length < 5) {
+      tips.push({
+        id: "emergency",
+        ...savingsTipCategories.emergency,
+        potentialSavings: Math.round(monthlyIncome * 0.1)
+      });
+    }
+
+    return tips;
+  };
+
+  const savingsTips = generateSavingsTips();
   const totalPotentialSavings = savingsTips.reduce(
     (total, tip) => total + tip.potentialSavings,
     0

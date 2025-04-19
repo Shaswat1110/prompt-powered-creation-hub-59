@@ -1,4 +1,3 @@
-
 import { Transaction, Category, CategorySpending, MonthlySpending, SavingsTip, Budget } from "@/types";
 
 // Empty initial transactions
@@ -137,3 +136,42 @@ export function getTransactions(page: number = 1, limit: number = 5): Transactio
 export function getTotalTransactions(): number {
   return transactions.length;
 }
+
+export const savingsTipCategories = {
+  highSpending: {
+    food: {
+      title: "Reduce Food Expenses",
+      description: "Your food spending is higher than usual. Consider meal planning and cooking at home more often.",
+      difficulty: "medium" as const,
+      categories: ["Food & Dining", "Restaurants", "Fast Food", "Coffee Shops"]
+    },
+    entertainment: {
+      title: "Optimize Entertainment Costs",
+      description: "Look for free or low-cost entertainment options and review your subscription services.",
+      difficulty: "easy" as const,
+      categories: ["Entertainment", "Movies & DVDs", "Music", "Television"]
+    },
+    transport: {
+      title: "Reduce Transportation Costs",
+      description: "Consider using public transport, carpooling, or cycling for regular commutes.",
+      difficulty: "medium" as const,
+      categories: ["Transport", "Gas & Fuel", "Auto Insurance"]
+    },
+    shopping: {
+      title: "Optimize Shopping Habits",
+      description: "Try to buy items during sales, use coupons, and compare prices before purchasing.",
+      difficulty: "easy" as const,
+      categories: ["Shopping", "Electronics & Software"]
+    }
+  },
+  recurring: {
+    title: "Review Recurring Payments",
+    description: "Analyze your subscription services and recurring bills for potential savings.",
+    difficulty: "easy" as const
+  },
+  emergency: {
+    title: "Build Emergency Fund",
+    description: "Start saving for unexpected expenses by setting aside a portion of your income.",
+    difficulty: "medium" as const
+  }
+};
