@@ -4,8 +4,10 @@ import { useAuth } from "./AuthContext";
 
 interface TransactionContextType {
   transactions: Transaction[];
+  monthlyIncome: number;
   addTransaction: (transaction: Omit<Transaction, "id">) => void;
   clearTransactions: () => void;
+  setMonthlyIncome: (amount: number) => void;
 }
 
 const TransactionContext = createContext<TransactionContextType | undefined>(undefined);
@@ -13,17 +15,22 @@ const TransactionContext = createContext<TransactionContextType | undefined>(und
 export const TransactionProvider = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuth();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [monthlyIncome, setMonthlyIncome] = useState<number>(0);
 
   useEffect(() => {
     if (user) {
       const storedTransactions = localStorage.getItem(`transactions_${user.id}`);
+      const storedIncome = localStorage.getItem(`monthlyIncome_${user.id}`);
+      
       if (storedTransactions) {
         setTransactions(JSON.parse(storedTransactions));
-      } else {
-        setTransactions([]);
+      }
+      if (storedIncome) {
+        setMonthlyIncome(JSON.parse(storedIncome));
       }
     } else {
       setTransactions([]);
+      setMonthlyIncome(0);
     }
   }, [user]);
 
@@ -32,6 +39,12 @@ export const TransactionProvider = ({ children }: { children: React.ReactNode })
       localStorage.setItem(`transactions_${user.id}`, JSON.stringify(transactions));
     }
   }, [transactions, user]);
+
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem(`monthlyIncome_${user.id}`, JSON.stringify(monthlyIncome));
+    }
+  }, [monthlyIncome, user]);
 
   const addTransaction = (transactionData: Omit<Transaction, "id">) => {
     const newTransaction: Transaction = {
@@ -50,7 +63,13 @@ export const TransactionProvider = ({ children }: { children: React.ReactNode })
   };
 
   return (
-    <TransactionContext.Provider value={{ transactions, addTransaction, clearTransactions }}>
+    <TransactionContext.Provider value={{ 
+      transactions, 
+      monthlyIncome,
+      addTransaction, 
+      clearTransactions,
+      setMonthlyIncome
+    }}>
       {children}
     </TransactionContext.Provider>
   );

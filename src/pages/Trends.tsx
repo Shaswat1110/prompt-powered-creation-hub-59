@@ -1,4 +1,3 @@
-
 import React, { useMemo } from "react";
 import { Calendar, BarChart2, PieChart, TrendingUp } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -23,9 +22,10 @@ import {
 } from "recharts";
 import { useTransactions } from "@/context/TransactionContext";
 import { CategorySpending } from "@/types";
+import MonthlyIncomeDialog from "@/components/MonthlyIncomeDialog";
 
 const Trends = () => {
-  const { transactions } = useTransactions();
+  const { transactions, monthlyIncome } = useTransactions();
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -34,14 +34,22 @@ const Trends = () => {
     }).format(amount);
   };
 
-  // Calculate monthly spending data from actual transactions
   const monthlySpendingData = useMemo(() => {
     const monthlyData = new Map<string, number>();
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth();
+    const currentYear = currentDate.getFullYear();
+
     transactions.forEach(transaction => {
       const date = new Date(transaction.date);
-      const monthKey = date.toLocaleString('default', { month: 'short' });
-      const currentAmount = monthlyData.get(monthKey) || 0;
-      monthlyData.set(monthKey, currentAmount + (transaction.amount > 0 ? transaction.amount : 0));
+      const transactionMonth = date.getMonth();
+      const transactionYear = date.getFullYear();
+      
+      if (transactionMonth === currentMonth && transactionYear === currentYear) {
+        const monthKey = date.toLocaleString('default', { month: 'short' });
+        const currentAmount = monthlyData.get(monthKey) || 0;
+        monthlyData.set(monthKey, currentAmount + (transaction.amount > 0 ? transaction.amount : 0));
+      }
     });
 
     return Array.from(monthlyData.entries()).map(([month, amount]) => ({
@@ -50,13 +58,19 @@ const Trends = () => {
     }));
   }, [transactions]);
 
-  // Calculate category spending data from actual transactions
   const categorySpendingData = useMemo(() => {
     const categoryData = new Map<string, number>();
     let totalSpending = 0;
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth();
+    const currentYear = currentDate.getFullYear();
 
     transactions.forEach(transaction => {
-      if (transaction.amount > 0) { // Only consider expenses
+      const date = new Date(transaction.date);
+      const transactionMonth = date.getMonth();
+      const transactionYear = date.getFullYear();
+      
+      if (transaction.amount > 0 && transactionMonth === currentMonth && transactionYear === currentYear) {
         const currentAmount = categoryData.get(transaction.category) || 0;
         categoryData.set(transaction.category, currentAmount + transaction.amount);
         totalSpending += transaction.amount;
@@ -78,19 +92,7 @@ const Trends = () => {
           <h1 className="text-3xl font-bold text-gray-900">Spending Trends</h1>
           <p className="text-gray-500 mt-1">Visualize and analyze your spending patterns</p>
         </div>
-        <div className="flex gap-4 mt-4 md:mt-0">
-          <Select defaultValue="6months">
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Time Period" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="1month">Last Month</SelectItem>
-              <SelectItem value="3months">Last 3 Months</SelectItem>
-              <SelectItem value="6months">Last 6 Months</SelectItem>
-              <SelectItem value="1year">Last Year</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        <MonthlyIncomeDialog />
       </div>
 
       <Tabs defaultValue="monthly" className="w-full">
