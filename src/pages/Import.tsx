@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator";
 import { categorizeTransaction } from "@/services/mockData";
 import { toast } from "sonner";
+import { useTransactions } from "@/context/TransactionContext";
 
 const Import = () => {
   const [selectedBank, setSelectedBank] = useState<string>("none");
@@ -14,10 +15,71 @@ const Import = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [progress, setProgress] = useState<number>(0);
 
+  const { addTransaction } = useTransactions();
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       setFile(e.target.files[0]);
     }
+  };
+
+  const handleFileUpload = async (file: File) => {
+    if (!file.name.toLowerCase().endsWith('.csv')) {
+      toast.error("Please upload a CSV file");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      if (event.target?.result) {
+        const content = event.target.result as string;
+        const lines = content.split('\n');
+        
+        const transactions = lines
+          .filter(line => line.trim().length > 0)
+          .slice(1)
+          .map(line => {
+            try {
+              const [date, description, amount] = line.split(',').map(field => field.trim());
+              const cleanAmount = amount.replace(/[^0-9.-]/g, '');
+              const parsedAmount = parseFloat(cleanAmount);
+              
+              if (!date || !description || isNaN(parsedAmount)) {
+                console.warn('Skipping invalid transaction:', line);
+                return null;
+              }
+
+              const category = categorizeTransaction(description);
+              
+              return {
+                date: new Date(date).toISOString().split('T')[0],
+                description: description,
+                amount: parsedAmount,
+                category: category
+              };
+            } catch (error) {
+              console.warn('Error parsing line:', line, error);
+              return null;
+            }
+          })
+          .filter(t => t !== null);
+
+        transactions.forEach(transaction => {
+          if (transaction) {
+            addTransaction(transaction);
+          }
+        });
+
+        toast.success(`Successfully imported ${transactions.length} transactions`);
+        console.log('Parsed transactions:', transactions);
+      }
+    };
+
+    reader.onerror = () => {
+      toast.error("Error reading file");
+    };
+    
+    reader.readAsText(file);
   };
 
   const handleUpload = () => {
@@ -34,7 +96,7 @@ const Import = () => {
         if (prev >= 100) {
           clearInterval(interval);
           setLoading(false);
-          toast.success("Transactions imported successfully!");
+          handleFileUpload(file);
           return 100;
         }
         return prev + 10;
@@ -62,33 +124,6 @@ const Import = () => {
         return prev + 10;
       });
     }, 300);
-  };
-
-  const handleFileUpload = async (file: File) => {
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      if (event.target?.result) {
-        const content = event.target.result as string;
-        const lines = content.split('\n');
-        
-        const transactions = lines.slice(1).map(line => {
-          const [date, description, amount] = line.split(',');
-          const category = categorizeTransaction(description);
-          
-          return {
-            date: date,
-            description: description,
-            amount: parseFloat(amount),
-            category: category
-          };
-        }).filter(t => !isNaN(t.amount));
-
-        console.log('Parsed transactions:', transactions);
-        toast.success(`Successfully parsed ${transactions.length} transactions`);
-      }
-    };
-    
-    reader.readAsText(file);
   };
 
   const banks = [
