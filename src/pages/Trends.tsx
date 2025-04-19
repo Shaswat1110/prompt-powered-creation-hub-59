@@ -1,8 +1,9 @@
-import React, { useMemo } from "react";
-import { Calendar, BarChart2, PieChart, TrendingUp } from "lucide-react";
+import React, { useMemo, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { BarChart2, PieChart, TrendingUp } from "lucide-react";
+import { startOfMonth, endOfMonth, isSameMonth, parseISO } from "date-fns";
+import DateRangeSelector from "@/components/DateRangeSelector";
 import { 
   ResponsiveContainer, 
   BarChart, 
@@ -25,6 +26,7 @@ import { CategorySpending } from "@/types";
 
 const Trends = () => {
   const { transactions, monthlyIncome } = useTransactions();
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -35,41 +37,40 @@ const Trends = () => {
 
   const monthlySpendingData = useMemo(() => {
     const monthlyData = new Map<string, number>();
-    const currentDate = new Date();
-    const currentMonth = currentDate.getMonth();
-    const currentYear = currentDate.getFullYear();
-
+    
+    // Get all unique months from transactions
     transactions.forEach(transaction => {
       const date = new Date(transaction.date);
-      const transactionMonth = date.getMonth();
-      const transactionYear = date.getFullYear();
-      
-      if (transactionMonth === currentMonth && transactionYear === currentYear) {
-        const monthKey = date.toLocaleString('default', { month: 'short' });
-        const currentAmount = monthlyData.get(monthKey) || 0;
-        monthlyData.set(monthKey, currentAmount + (transaction.amount > 0 ? transaction.amount : 0));
-      }
+      const monthKey = date.toLocaleString('default', { month: 'short', year: 'numeric' });
+      const currentAmount = monthlyData.get(monthKey) || 0;
+      monthlyData.set(monthKey, currentAmount + (transaction.amount > 0 ? transaction.amount : 0));
     });
 
-    return Array.from(monthlyData.entries()).map(([month, amount]) => ({
-      month,
-      amount
-    }));
+    return Array.from(monthlyData.entries())
+      .map(([month, amount]) => ({
+        month,
+        amount
+      }))
+      .sort((a, b) => {
+        const dateA = new Date(a.month);
+        const dateB = new Date(b.month);
+        return dateA.getTime() - dateB.getTime();
+      });
   }, [transactions]);
+
+  const filteredTransactions = useMemo(() => {
+    return transactions.filter(transaction => {
+      const transactionDate = parseISO(transaction.date);
+      return isSameMonth(transactionDate, selectedDate);
+    });
+  }, [transactions, selectedDate]);
 
   const categorySpendingData = useMemo(() => {
     const categoryData = new Map<string, number>();
     let totalSpending = 0;
-    const currentDate = new Date();
-    const currentMonth = currentDate.getMonth();
-    const currentYear = currentDate.getFullYear();
 
-    transactions.forEach(transaction => {
-      const date = new Date(transaction.date);
-      const transactionMonth = date.getMonth();
-      const transactionYear = date.getFullYear();
-      
-      if (transaction.amount > 0 && transactionMonth === currentMonth && transactionYear === currentYear) {
+    filteredTransactions.forEach(transaction => {
+      if (transaction.amount > 0) {
         const currentAmount = categoryData.get(transaction.category) || 0;
         categoryData.set(transaction.category, currentAmount + transaction.amount);
         totalSpending += transaction.amount;
@@ -82,7 +83,7 @@ const Trends = () => {
         amount,
         percentage: totalSpending > 0 ? (amount / totalSpending) : 0
       }));
-  }, [transactions]);
+  }, [filteredTransactions]);
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -144,11 +145,15 @@ const Trends = () => {
         <TabsContent value="categories">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card>
-              <CardHeader>
-                <CardTitle>Category Breakdown</CardTitle>
-                <CardDescription>
-                  See how your spending is distributed
-                </CardDescription>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <div>
+                  <CardTitle>Category Breakdown</CardTitle>
+                  <CardDescription>See how your spending is distributed</CardDescription>
+                </div>
+                <DateRangeSelector 
+                  date={selectedDate}
+                  onDateChange={setSelectedDate}
+                />
               </CardHeader>
               <CardContent className="h-[400px]">
                 <ResponsiveContainer width="100%" height="100%">
@@ -186,11 +191,15 @@ const Trends = () => {
             </Card>
 
             <Card>
-              <CardHeader>
-                <CardTitle>Top Spending Categories</CardTitle>
-                <CardDescription>
-                  Where most of your money goes
-                </CardDescription>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <div>
+                  <CardTitle>Top Spending Categories</CardTitle>
+                  <CardDescription>Where most of your money goes</CardDescription>
+                </div>
+                <DateRangeSelector 
+                  date={selectedDate}
+                  onDateChange={setSelectedDate}
+                />
               </CardHeader>
               <CardContent className="h-[400px]">
                 <ResponsiveContainer width="100%" height="100%">
