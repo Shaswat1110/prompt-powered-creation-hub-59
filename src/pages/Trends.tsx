@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useMemo } from "react";
 import { Calendar, BarChart2, PieChart, TrendingUp } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -21,15 +21,55 @@ import {
   Cell,
   PieChart as RechartsPieChart
 } from "recharts";
-import { monthlySpending, categorySpending } from "@/services/mockData";
+import { useTransactions } from "@/context/TransactionContext";
+import { CategorySpending } from "@/types";
 
 const Trends = () => {
+  const { transactions } = useTransactions();
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
     }).format(amount);
   };
+
+  // Calculate monthly spending data from actual transactions
+  const monthlySpendingData = useMemo(() => {
+    const monthlyData = new Map<string, number>();
+    transactions.forEach(transaction => {
+      const date = new Date(transaction.date);
+      const monthKey = date.toLocaleString('default', { month: 'short' });
+      const currentAmount = monthlyData.get(monthKey) || 0;
+      monthlyData.set(monthKey, currentAmount + (transaction.amount > 0 ? transaction.amount : 0));
+    });
+
+    return Array.from(monthlyData.entries()).map(([month, amount]) => ({
+      month,
+      amount
+    }));
+  }, [transactions]);
+
+  // Calculate category spending data from actual transactions
+  const categorySpendingData = useMemo(() => {
+    const categoryData = new Map<string, number>();
+    let totalSpending = 0;
+
+    transactions.forEach(transaction => {
+      if (transaction.amount > 0) { // Only consider expenses
+        const currentAmount = categoryData.get(transaction.category) || 0;
+        categoryData.set(transaction.category, currentAmount + transaction.amount);
+        totalSpending += transaction.amount;
+      }
+    });
+
+    return Array.from(categoryData.entries())
+      .map(([category, amount]) => ({
+        category,
+        amount,
+        percentage: totalSpending > 0 ? (amount / totalSpending) : 0
+      }));
+  }, [transactions]);
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -79,7 +119,7 @@ const Trends = () => {
             </CardHeader>
             <CardContent className="h-[400px]">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={monthlySpending}>
+                <BarChart data={monthlySpendingData}>
                   <XAxis dataKey="month" />
                   <YAxis 
                     tickFormatter={(value) => `$${value}`}
@@ -87,7 +127,6 @@ const Trends = () => {
                   />
                   <Tooltip 
                     formatter={(value) => formatCurrency(Number(value))}
-                    labelFormatter={(label) => `${label} 2025`}
                   />
                   <Legend />
                   <Bar 
@@ -113,16 +152,16 @@ const Trends = () => {
               </CardHeader>
               <CardContent className="h-[400px]">
                 <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
+                  <RechartsPieChart>
                     <Tooltip 
                       formatter={(value) => formatCurrency(Number(value))}
                       labelFormatter={(category) => {
-                        return category.charAt(0).toUpperCase() + category.slice(1);
+                        return String(category).charAt(0).toUpperCase() + String(category).slice(1);
                       }}
                     />
                     <Legend layout="vertical" verticalAlign="middle" align="right" />
                     <Pie
-                      data={categorySpending}
+                      data={categorySpendingData}
                       cx="50%"
                       cy="50%"
                       outerRadius={120}
@@ -131,7 +170,7 @@ const Trends = () => {
                       nameKey="category"
                       label={({ name, percent }) => `${(percent * 100).toFixed(0)}%`}
                     >
-                      {categorySpending.map((entry, index) => (
+                      {categorySpendingData.map((entry, index) => (
                         <Cell 
                           key={`cell-${index}`} 
                           fill={[
@@ -141,7 +180,7 @@ const Trends = () => {
                         />
                       ))}
                     </Pie>
-                  </PieChart>
+                  </RechartsPieChart>
                 </ResponsiveContainer>
               </CardContent>
             </Card>
@@ -156,7 +195,7 @@ const Trends = () => {
               <CardContent className="h-[400px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
-                    data={categorySpending.sort((a, b) => b.amount - a.amount).slice(0, 5)}
+                    data={categorySpendingData.sort((a, b) => b.amount - a.amount).slice(0, 5)}
                     layout="vertical"
                   >
                     <XAxis 
@@ -167,12 +206,12 @@ const Trends = () => {
                       type="category" 
                       dataKey="category" 
                       width={100} 
-                      tickFormatter={(value) => value.charAt(0).toUpperCase() + value.slice(1)}
+                      tickFormatter={(value) => String(value).charAt(0).toUpperCase() + String(value).slice(1)}
                     />
                     <Tooltip 
                       formatter={(value) => formatCurrency(Number(value))}
                       labelFormatter={(category) => {
-                        return category.charAt(0).toUpperCase() + category.slice(1);
+                        return String(category).charAt(0).toUpperCase() + String(category).slice(1);
                       }}
                     />
                     <Bar 
@@ -197,7 +236,7 @@ const Trends = () => {
             </CardHeader>
             <CardContent className="h-[400px]">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={monthlySpending}>
+                <AreaChart data={monthlySpendingData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="month" />
                   <YAxis 
@@ -206,7 +245,6 @@ const Trends = () => {
                   />
                   <Tooltip 
                     formatter={(value) => formatCurrency(Number(value))}
-                    labelFormatter={(label) => `${label} 2025`}
                   />
                   <Legend />
                   <Area 
