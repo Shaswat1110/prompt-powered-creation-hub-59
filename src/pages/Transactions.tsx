@@ -1,13 +1,13 @@
 
 import React, { useState } from "react";
-import { Search, Filter, Plus } from "lucide-react";
+import { Search, Filter, Plus, ArrowUpZA, ArrowDownAZ } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import TransactionList from "@/components/TransactionList";
 import { categoryDetails } from "@/services/mockData";
-import { Category } from "@/types";
+import { Category, Transaction } from "@/types";
 import { useTransactions } from "@/context/TransactionContext";
 import { 
   Dialog, 
@@ -16,15 +16,24 @@ import {
   DialogDescription,
   DialogHeader
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import AddTransactionForm from "@/components/AddTransactionForm";
+
+type SortOption = "date-desc" | "date-asc" | "amount-desc" | "amount-asc";
 
 const Transactions = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<Category | "all">("all");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [sortBy, setSortBy] = useState<SortOption>("date-desc");
   const { transactions } = useTransactions();
   
-  // Filter transactions based on search term and category
+  // Filter and sort transactions
   const filteredTransactions = transactions.filter(transaction => {
     const matchesSearch = searchTerm === "" || 
       transaction.description.toLowerCase().includes(searchTerm.toLowerCase());
@@ -32,6 +41,19 @@ const Transactions = () => {
     const matchesCategory = selectedCategory === "all" || transaction.category === selectedCategory;
     
     return matchesSearch && matchesCategory;
+  }).sort((a: Transaction, b: Transaction) => {
+    switch (sortBy) {
+      case "date-desc":
+        return new Date(b.date).getTime() - new Date(a.date).getTime();
+      case "date-asc":
+        return new Date(a.date).getTime() - new Date(b.date).getTime();
+      case "amount-desc":
+        return b.amount - a.amount;
+      case "amount-asc":
+        return a.amount - b.amount;
+      default:
+        return 0;
+    }
   });
 
   return (
@@ -84,9 +106,31 @@ const Transactions = () => {
                   ))}
                 </SelectContent>
               </Select>
-              <Button variant="outline" size="icon">
-                <Filter className="h-4 w-4" />
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="icon">
+                    <Filter className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="bg-white dark:bg-gray-800">
+                  <DropdownMenuItem onClick={() => setSortBy("date-desc")}>
+                    <ArrowDownAZ className="mr-2 h-4 w-4" />
+                    Newest First
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setSortBy("date-asc")}>
+                    <ArrowUpZA className="mr-2 h-4 w-4" />
+                    Oldest First
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setSortBy("amount-desc")}>
+                    <ArrowDownAZ className="mr-2 h-4 w-4" />
+                    Highest Amount
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setSortBy("amount-asc")}>
+                    <ArrowUpZA className="mr-2 h-4 w-4" />
+                    Lowest Amount
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
 
