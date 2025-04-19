@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -13,7 +12,7 @@ import { Plus } from "lucide-react";
 const AddTransactionForm: React.FC = () => {
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
-  const [category, setCategory] = useState<Category>("other");
+  const [category, setCategory] = useState<Category>("Shopping"); // Changed from "other" to "Shopping"
   const [isExpense, setIsExpense] = useState(true);
   const { addTransaction } = useTransactions();
   const { toast } = useToast();
@@ -51,7 +50,7 @@ const AddTransactionForm: React.FC = () => {
     // Reset form
     setDescription("");
     setAmount("");
-    setCategory("other");
+    setCategory("Shopping");
     setIsExpense(true);
 
     // Show success message
@@ -142,7 +141,7 @@ const AddTransactionForm: React.FC = () => {
         <CardFooter>
           <Button type="submit" className="w-full">
             <Plus className="mr-2 h-4 w-4" />
-            Add Transaction
+            Add {isExpense ? 'Expense' : 'Income'}
           </Button>
         </CardFooter>
       </form>
