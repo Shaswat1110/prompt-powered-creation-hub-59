@@ -4,9 +4,9 @@ import { Transaction, Category, CategorySpending, MonthlySpending, SavingsTip, B
 // Empty initial transactions
 export const transactions: Transaction[] = [];
 
-// Updated category definitions with new categories
+// Updated category definitions with valid Lucide icon names
 export const categoryDetails = {
-  "Shopping": { name: "Shopping", color: "bg-budget-primary", icon: "ShoppingBag", displayName: "Shopping" },
+  "Shopping": { name: "Shopping", color: "bg-budget-primary", icon: "ShoppingCart", displayName: "Shopping" },
   "Mortgage & Rent": { name: "Mortgage & Rent", color: "bg-budget-housing", icon: "Home", displayName: "Mortgage & Rent" },
   "Restaurants": { name: "Restaurants", color: "bg-budget-food", icon: "Utensils", displayName: "Restaurants" },
   "Credit Card Payment": { name: "Credit Card Payment", color: "bg-budget-finance", icon: "CreditCard", displayName: "Credit Card Payment" },
@@ -15,21 +15,21 @@ export const categoryDetails = {
   "Utilities": { name: "Utilities", color: "bg-budget-utilities", icon: "Zap", displayName: "Utilities" },
   "Music": { name: "Music", color: "bg-budget-entertainment", icon: "Music", displayName: "Music" },
   "Mobile Phone": { name: "Mobile Phone", color: "bg-budget-utilities", icon: "Smartphone", displayName: "Mobile Phone" },
-  "Gas & Fuel": { name: "Gas & Fuel", color: "bg-budget-transport", icon: "Fuel", displayName: "Gas & Fuel" },
+  "Gas & Fuel": { name: "Gas & Fuel", color: "bg-budget-transport", icon: "Zap", displayName: "Gas & Fuel" },
   "Groceries": { name: "Groceries", color: "bg-budget-grocery", icon: "ShoppingCart", displayName: "Groceries" },
-  "Paycheck": { name: "Paycheck", color: "bg-budget-income", icon: "Wallet", displayName: "Paycheck" },
-  "Fast Food": { name: "Fast Food", color: "bg-budget-food", icon: "Pizza", displayName: "Fast Food" },
+  "Paycheck": { name: "Paycheck", color: "bg-budget-income", icon: "DollarSign", displayName: "Paycheck" },
+  "Fast Food": { name: "Fast Food", color: "bg-budget-food", icon: "Book", displayName: "Fast Food" },
   "Coffee Shops": { name: "Coffee Shops", color: "bg-budget-food", icon: "Coffee", displayName: "Coffee Shops" },
   "Internet": { name: "Internet", color: "bg-budget-utilities", icon: "Wifi", displayName: "Internet" },
   "Haircut": { name: "Haircut", color: "bg-budget-personal", icon: "Scissors", displayName: "Haircut" },
-  "Alcohol & Bars": { name: "Alcohol & Bars", color: "bg-budget-entertainment", icon: "Wine", displayName: "Alcohol & Bars" },
+  "Alcohol & Bars": { name: "Alcohol & Bars", color: "bg-budget-entertainment", icon: "Book", displayName: "Alcohol & Bars" },
   "Auto Insurance": { name: "Auto Insurance", color: "bg-budget-transport", icon: "Shield", displayName: "Auto Insurance" },
-  "Entertainment": { name: "Entertainment", color: "bg-budget-entertainment", icon: "Gamepad2", displayName: "Entertainment" },
-  "Food & Dining": { name: "Food & Dining", color: "bg-budget-food", icon: "UtensilsCrossed", displayName: "Food & Dining" },
+  "Entertainment": { name: "Entertainment", color: "bg-budget-entertainment", icon: "Book", displayName: "Entertainment" },
+  "Food & Dining": { name: "Food & Dining", color: "bg-budget-food", icon: "Book", displayName: "Food & Dining" },
   "Television": { name: "Television", color: "bg-budget-entertainment", icon: "Tv", displayName: "Television" },
-  "Electronics & Software": { name: "Electronics & Software", color: "bg-budget-personal", icon: "Laptop", displayName: "Electronics & Software" },
-  "Transport": { name: "Transport", color: "bg-budget-transport", icon: "Car", displayName: "Transport" },
-  "Medical": { name: "Medical", color: "bg-budget-health", icon: "Stethoscope", displayName: "Medical" }
+  "Electronics & Software": { name: "Electronics & Software", color: "bg-budget-personal", icon: "Settings", displayName: "Electronics & Software" },
+  "Transport": { name: "Transport", color: "bg-budget-transport", icon: "Zap", displayName: "Transport" },
+  "Medical": { name: "Medical", color: "bg-budget-health", icon: "Book", displayName: "Medical" }
 };
 
 // Empty initial monthly spending data
