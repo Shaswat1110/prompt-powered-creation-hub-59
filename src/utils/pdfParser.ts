@@ -1,9 +1,13 @@
 
-// We add the id field; also fix import of pdfjs-dist after installing it.
+// pdfParser.ts - fix import & setup for pdfjs-dist in browser environment.
 
 import { Transaction } from "@/types";
 import { categorizeTransaction } from "@/services/mockData";
-import * as pdfjsLib from "pdfjs-dist";
+// Import pdfjs with correct path for worker setup.
+import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf";
+
+// Setup pdfjs workerSrc to point to the worker script in node_modules
+pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.js";
 
 const generateId = () => Math.random().toString(36).substr(2, 9);
 
@@ -67,4 +71,3 @@ const parsePDF = async (file: File): Promise<Transaction[]> => {
 };
 
 export default parsePDF;
-
