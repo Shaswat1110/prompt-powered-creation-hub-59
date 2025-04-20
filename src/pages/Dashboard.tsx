@@ -127,6 +127,13 @@ const Dashboard = () => {
 
   const currentMonthName = new Date().toLocaleString('default', { month: 'long' });
 
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+    }).format(amount);
+  };
+
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">

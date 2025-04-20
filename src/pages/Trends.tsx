@@ -23,22 +23,15 @@ import {
 } from "recharts";
 import { useTransactions } from "@/context/TransactionContext";
 import { CategorySpending } from "@/types";
+import { formatCurrency } from "@/lib/utils";
 
 const Trends = () => {
   const { transactions, monthlyIncome } = useTransactions();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(amount);
-  };
-
   const monthlySpendingData = useMemo(() => {
     const monthlyData = new Map<string, number>();
     
-    // Get all unique months from transactions
     transactions.forEach(transaction => {
       const date = new Date(transaction.date);
       const monthKey = date.toLocaleString('default', { month: 'short', year: 'numeric' });
