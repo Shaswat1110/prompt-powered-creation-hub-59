@@ -5,10 +5,13 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuIte
 import { Download, FileText } from "lucide-react";
 import { toast } from "sonner";
 
-// Sample data strings for each format (small dummy data)
+// Enhanced sample data strings for each format with multiple transactions
 const sampleCSV = `Date,Description,Amount
 04/01/2025,Starbucks Coffee,15.45
 04/02/2025,Salary Deposit,-2500.00
+04/03/2025,Amazon Purchase,120.00
+04/04/2025,Gas Station,40.50
+04/05/2025,Restaurant Dinner,85.20
 `;
 
 const sampleQFX = `
@@ -51,6 +54,24 @@ const sampleQFX = `
             <TRNAMT>2500.00</TRNAMT>
             <NAME>Salary Deposit</NAME>
           </STMTTRN>
+          <STMTTRN>
+            <TRNTYPE>DEBIT</TRNTYPE>
+            <DTPOSTED>20250403</DTPOSTED>
+            <TRNAMT>-120.00</TRNAMT>
+            <NAME>Amazon Purchase</NAME>
+          </STMTTRN>
+          <STMTTRN>
+            <TRNTYPE>DEBIT</TRNTYPE>
+            <DTPOSTED>20250404</DTPOSTED>
+            <TRNAMT>-40.50</TRNAMT>
+            <NAME>Gas Station</NAME>
+          </STMTTRN>
+          <STMTTRN>
+            <TRNTYPE>DEBIT</TRNTYPE>
+            <DTPOSTED>20250405</DTPOSTED>
+            <TRNAMT>-85.20</TRNAMT>
+            <NAME>Restaurant Dinner</NAME>
+          </STMTTRN>
         </BANKTRANLIST>
       </STMTRS>
     </STMTTRNRS>
@@ -60,7 +81,48 @@ const sampleQFX = `
 
 const sampleOFX = sampleQFX; // OFX format is very similar to QFX
 
-const samplePDF = "%PDF-1.4\n%âãÏÓ\n1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n2 0 obj\n<< /Type /Pages /Count 1 /Kids [3 0 R] >>\nendobj\n3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 300 144]\n/Contents 4 0 R >>\nendobj\n4 0 obj\n<< /Length 44 >>\nstream\nBT\n/F1 24 Tf\n100 100 Td\n(Sample PDF) Tj\nET\nendstream\nendobj\nxref\n0 5\n0000000000 65535 f \n0000000010 00000 n \n0000000079 00000 n \n0000000175 00000 n \n0000000274 00000 n \ntrailer\n<< /Size 5 /Root 1 0 R >>\nstartxref\n337\n%%EOF";
+const samplePDF = `%PDF-1.4
+%âãÏÓ
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Count 1 /Kids [3 0 R] >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 300 144]
+/Contents 4 0 R >>
+endobj
+4 0 obj
+<< /Length 400 >>
+stream
+BT
+/F1 18 Tf
+10 120 Td
+(04/01/2025 Starbucks Coffee $15.45) Tj
+0 -18 Td
+(04/02/2025 Salary Deposit -$2500.00) Tj
+0 -18 Td
+(04/03/2025 Amazon Purchase $120.00) Tj
+0 -18 Td
+(04/04/2025 Gas Station $40.50) Tj
+0 -18 Td
+(04/05/2025 Restaurant Dinner $85.20) Tj
+ET
+endstream
+endobj
+xref
+0 5
+0000000000 65535 f 
+0000000010 00000 n 
+0000000079 00000 n 
+0000000175 00000 n 
+0000000274 00000 n 
+trailer
+<< /Size 5 /Root 1 0 R >>
+startxref
+337
+%%EOF`;
 
 const samples = {
   csv: {
@@ -146,4 +208,3 @@ const SampleDataDownloader: React.FC = () => {
 };
 
 export default SampleDataDownloader;
-
