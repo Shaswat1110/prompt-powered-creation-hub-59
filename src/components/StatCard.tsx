@@ -1,7 +1,7 @@
-
 import React, { ReactNode } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { formatCurrency } from "@/lib/utils";
 
 interface StatCardProps {
   title: string;
@@ -28,6 +28,11 @@ const StatCard: React.FC<StatCardProps> = ({
     neutral: "text-gray-500",
   };
 
+  // If value is a number, use formatCurrency
+  const formattedValue = typeof value === 'number' 
+    ? formatCurrency(value) 
+    : value;
+
   return (
     <Card className={cn("overflow-hidden", className)}>
       <CardContent className="p-6">
@@ -36,7 +41,7 @@ const StatCard: React.FC<StatCardProps> = ({
           {icon && <div className="text-gray-400">{icon}</div>}
         </div>
         <div className="mt-2 flex items-baseline">
-          <p className="text-2xl font-semibold">{value}</p>
+          <p className="text-2xl font-semibold">{formattedValue}</p>
           {trend && trendValue && (
             <span
               className={cn(

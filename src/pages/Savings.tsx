@@ -7,16 +7,10 @@ import { Button } from "@/components/ui/button";
 import { savingsTipCategories } from "@/services/mockData";
 import { useTransactions } from "@/context/TransactionContext";
 import { startOfMonth, endOfMonth, subMonths } from "date-fns";
+import { formatCurrency } from "@/lib/utils";
 
 const Savings = () => {
   const { transactions, monthlyIncome } = useTransactions();
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(amount);
-  };
 
   const getCurrentMonthSpending = () => {
     const now = new Date();
@@ -114,6 +108,8 @@ const Savings = () => {
     hard: "bg-red-100 text-red-800",
   };
 
+  const potentialSavingsCurrency = formatCurrency(totalPotentialSavings);
+
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
@@ -124,7 +120,7 @@ const Savings = () => {
         <div className="mt-4 md:mt-0 bg-budget-primary/10 px-4 py-2 rounded-md flex items-center">
           <DollarSign className="h-5 w-5 text-budget-primary mr-2" />
           <span className="text-budget-primary font-medium">
-            Potential Monthly Savings: {formatCurrency(totalPotentialSavings)}
+            Potential Monthly Savings: {potentialSavingsCurrency}
           </span>
         </div>
       </div>
@@ -139,7 +135,7 @@ const Savings = () => {
               <h3 className="text-lg font-medium text-gray-900">Smart Savings Analysis</h3>
               <p className="text-gray-600 mt-1">
                 Based on your spending patterns, we've identified several opportunities to save money. 
-                Implementing all recommendations could save you up to {formatCurrency(totalPotentialSavings)} per month.
+                Implementing all recommendations could save you up to {potentialSavingsCurrency} per month.
               </p>
             </div>
           </div>

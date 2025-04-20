@@ -1,4 +1,3 @@
-
 import React, { useMemo } from "react";
 import {
   ArrowDownIcon,
@@ -21,6 +20,7 @@ import AddTransactionForm from "@/components/AddTransactionForm";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from "recharts";
 import { format } from "date-fns";
+import { formatCurrency } from "@/lib/utils";
 
 const Dashboard = () => {
   const { transactions, monthlyIncome, setMonthlyIncome } = useTransactions();
@@ -62,12 +62,7 @@ const Dashboard = () => {
     : 0;
 
   // Format currency
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(amount);
-  };
+  
 
   // Recent transactions
   const recentTransactions = transactions.slice(-5).reverse();
@@ -218,7 +213,7 @@ const Dashboard = () => {
                 <BarChart data={spendingTrendsData}>
                   <XAxis dataKey="date" />
                   <YAxis 
-                    tickFormatter={(value) => `$${value}`}
+                    tickFormatter={(value) => `₹${value}`}
                     width={80}
                   />
                   <Tooltip 

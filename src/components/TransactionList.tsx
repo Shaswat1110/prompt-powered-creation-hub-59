@@ -1,4 +1,3 @@
-
 import React from "react";
 import { 
   Table, 
@@ -11,6 +10,7 @@ import {
 import CategoryBadge from "@/components/CategoryBadge";
 import { Transaction } from "@/types";
 import { formatDistanceToNow } from "date-fns";
+import { formatCurrency } from "@/lib/utils";
 
 interface TransactionListProps {
   transactions: Transaction[];
@@ -21,13 +21,6 @@ const TransactionList: React.FC<TransactionListProps> = ({
   transactions,
   compact = false 
 }) => {
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(amount);
-  };
-
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return formatDistanceToNow(date, { addSuffix: true });
