@@ -1,5 +1,10 @@
 import React from "react";
-import { LightbulbIcon, TrendingDown, DollarSign, Star } from "lucide-react";
+import { 
+  LightbulbIcon, 
+  TrendingDown, 
+  IndianRupee, 
+  Star 
+} from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
@@ -118,7 +123,7 @@ const Savings = () => {
           <p className="text-gray-500 mt-1">Smart suggestions to help you save money</p>
         </div>
         <div className="mt-4 md:mt-0 bg-budget-primary/10 px-4 py-2 rounded-md flex items-center">
-          <DollarSign className="h-5 w-5 text-budget-primary mr-2" />
+          <IndianRupee className="h-5 w-5 text-budget-primary mr-2" />
           <span className="text-budget-primary font-medium">
             Potential Monthly Savings: {potentialSavingsCurrency}
           </span>

@@ -9,6 +9,7 @@ import {
   TrendingUp,
   Wallet,
   BarChart2,
+  IndianRupee,
 } from "lucide-react";
 import MonthlyIncomeDialog from "@/components/MonthlyIncomeDialog";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -25,12 +26,10 @@ import { formatCurrency } from "@/lib/utils";
 const Dashboard = () => {
   const { transactions, monthlyIncome, setMonthlyIncome } = useTransactions();
   
-  // Get current month and year
   const currentDate = new Date();
   const currentMonth = currentDate.getMonth();
   const currentYear = currentDate.getFullYear();
 
-  // Filter transactions for current month only
   const currentMonthTransactions = useMemo(() => {
     return transactions.filter(transaction => {
       try {
@@ -46,7 +45,6 @@ const Dashboard = () => {
     });
   }, [transactions, currentMonth, currentYear]);
   
-  // Calculate total spending and income for current month only
   const totalSpent = currentMonthTransactions
     .filter(t => t.amount > 0)
     .reduce((sum, t) => sum + t.amount, 0);
@@ -55,39 +53,29 @@ const Dashboard = () => {
     .filter(t => t.amount < 0)
     .reduce((sum, t) => sum + Math.abs(t.amount), 0);
     
-  // Calculate remaining budget from monthly income
   const remainingBudget = monthlyIncome - totalSpent;
   const remainingBudgetPercentage = monthlyIncome > 0 
     ? ((monthlyIncome - totalSpent) / monthlyIncome * 100)
     : 0;
 
-  // Format currency
-  
-
-  // Recent transactions
   const recentTransactions = transactions.slice(-5).reverse();
 
-  // Generate spending trends data
   const spendingTrendsData = useMemo(() => {
     const dailySpending = new Map();
     
-    // Get the first day of current month
     const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
-    // Get the last day of current month
     const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0);
     
-    // Initialize with all days of the month
     for (let day = 1; day <= lastDayOfMonth.getDate(); day++) {
       const date = new Date(currentYear, currentMonth, day);
-      if (date <= currentDate) { // Only include days up to today
+      if (date <= currentDate) {
         const formattedDate = format(date, 'dd');
         dailySpending.set(formattedDate, 0);
       }
     }
     
-    // Fill in spending data
     currentMonthTransactions.forEach(transaction => {
-      if (transaction.amount > 0) { // Only count expenses
+      if (transaction.amount > 0) {
         const transactionDate = new Date(transaction.date);
         const formattedDate = format(transactionDate, 'dd');
         const currentAmount = dailySpending.get(formattedDate) || 0;
@@ -102,7 +90,6 @@ const Dashboard = () => {
       }));
   }, [currentMonthTransactions, currentMonth, currentYear, currentDate]);
 
-  // Category spending data
   const categorySpendingData = useMemo(() => {
     const categoryData = new Map();
     let totalSpending = 0;
@@ -178,7 +165,7 @@ const Dashboard = () => {
         <StatCard
           title="Monthly Income"
           value={formatCurrency(monthlyIncome)}
-          icon={<DollarSign className="h-5 w-5" />}
+          icon={<IndianRupee className="h-5 w-5" />}
           description="Set your monthly income to track savings"
         />
         <StatCard
