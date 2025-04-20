@@ -191,12 +191,41 @@ const Dashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Recent Transactions</CardTitle>
+              <CardDescription>
+                Your latest financial activity
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {transactions.length > 0 ? (
+                <TransactionList transactions={recentTransactions} compact />
+              ) : (
+                <div className="text-center py-8">
+                  <p className="text-gray-500 dark:text-gray-400">No transactions yet</p>
+                  <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">
+                    Add your first transaction to get started
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        <div>
+          <AddTransactionForm />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
               <CardTitle>Daily Spending</CardTitle>
               <CardDescription>
-                {`Daily spending trends for ${currentMonthName}`}
+                {`Daily spending trends for ${new Date().toLocaleString('default', { month: 'long' })}`}
               </CardDescription>
             </div>
             <BarChart2 className="h-4 w-4 text-muted-foreground" />
@@ -234,7 +263,7 @@ const Dashboard = () => {
             <div>
               <CardTitle>Top Categories</CardTitle>
               <CardDescription>
-                {`Where your money went in ${currentMonthName}`}
+                {`Where your money went in ${new Date().toLocaleString('default', { month: 'long' })}`}
               </CardDescription>
             </div>
           </CardHeader>
@@ -278,33 +307,6 @@ const Dashboard = () => {
             )}
           </CardContent>
         </Card>
-
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Recent Transactions</CardTitle>
-              <CardDescription>
-                Your latest financial activity
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {transactions.length > 0 ? (
-                <TransactionList transactions={recentTransactions} compact />
-              ) : (
-                <div className="text-center py-8">
-                  <p className="text-gray-500 dark:text-gray-400">No transactions yet</p>
-                  <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">
-                    Add your first transaction to get started
-                  </p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-
-        <div>
-          <AddTransactionForm />
-        </div>
       </div>
     </div>
   );
