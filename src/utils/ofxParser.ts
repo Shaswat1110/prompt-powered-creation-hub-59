@@ -1,9 +1,8 @@
 
-// Simple parser for OFX files (XML-based, similar to QFX)
-// Extracts transactions with fields: date, description, amount, category
-
 import { Transaction } from "@/types";
 import { categorizeTransaction } from "@/services/mockData";
+
+const generateId = () => Math.random().toString(36).substr(2, 9);
 
 const parseOFX = (content: string): Transaction[] => {
   const transactions: Transaction[] = [];
@@ -31,18 +30,20 @@ const parseOFX = (content: string): Transaction[] => {
       const amount = parseFloat(amountRaw);
       const category = categorizeTransaction(desc);
 
-      transactions.push({
-        date: dateString,
-        description: desc,
-        amount: Math.abs(amount), // expenses positive, income negative below
-        category,
-      });
-
       const incomeKeywords = ["deposit", "salary", "payroll", "payment from"];
       const isIncome = incomeKeywords.some(kw => desc.toLowerCase().includes(kw));
+      let finalAmount = Math.abs(amount);
       if (isIncome && amount > 0) {
-        transactions[transactions.length - 1].amount = -amount;
+        finalAmount = -amount;
       }
+
+      transactions.push({
+        id: generateId(),
+        date: dateString,
+        description: desc,
+        amount: finalAmount,
+        category,
+      });
     });
   } catch (e) {
     console.error("Failed to parse OFX content", e);

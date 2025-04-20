@@ -1,15 +1,12 @@
 
-// Simple parser for QFX files (XML format)
-// Extracts transactions with fields: date, description, amount, category
-// Returns an array of transactions in the expected shape by context
-
 import { Transaction } from "@/types";
 import { categorizeTransaction } from "@/services/mockData";
+
+const generateId = () => Math.random().toString(36).substr(2, 9);
 
 const parseQFX = (content: string): Transaction[] => {
   const transactions: Transaction[] = [];
   try {
-    // Basic XML parsing using DOMParser if available or manual regex fallback
     const parser = new DOMParser();
     const doc = parser.parseFromString(content, "text/xml");
     const stmtTrnList = [...doc.getElementsByTagName("STMTTRN")];
@@ -31,22 +28,22 @@ const parseQFX = (content: string): Transaction[] => {
       }
 
       const amount = parseFloat(amountRaw);
-      // Category inference
       const category = categorizeTransaction(desc);
 
-      transactions.push({
-        date: dateString,
-        description: desc,
-        amount: Math.abs(amount),  // expenses positive, income negative below
-        category,
-      });
-
-      // Adjust amount sign: income (negative), expense positive
       const incomeKeywords = ["deposit", "salary", "payroll", "payment from"];
       const isIncome = incomeKeywords.some(kw => desc.toLowerCase().includes(kw));
+      let finalAmount = Math.abs(amount);
       if (isIncome && amount > 0) {
-        transactions[transactions.length - 1].amount = -amount;
+        finalAmount = -amount;
       }
+
+      transactions.push({
+        id: generateId(),
+        date: dateString,
+        description: desc,
+        amount: finalAmount,
+        category,
+      });
     });
   } catch (e) {
     console.error("Failed to parse QFX content", e);

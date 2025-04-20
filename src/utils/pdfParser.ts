@@ -1,19 +1,11 @@
 
+// We add the id field; also fix import of pdfjs-dist after installing it.
+
 import { Transaction } from "@/types";
 import { categorizeTransaction } from "@/services/mockData";
-import pdfjsLib from "pdfjs-dist";
+import * as pdfjsLib from "pdfjs-dist";
 
-interface ParsedTransaction {
-  date: string;
-  description: string;
-  amount: number;
-  category: string;
-}
-
-// PDF parsing is inherently complex - this utility will attempt to extract basic transactions from text lines matching a pattern.
-// This is a naive approach that can be improved with real PDF structure analysis in the future.
-
-// Due to environment limitation and complexity, here we implement a very basic placeholder parser that scans text and tries to pull out transactions.
+const generateId = () => Math.random().toString(36).substr(2, 9);
 
 const parsePDF = async (file: File): Promise<Transaction[]> => {
   try {
@@ -58,6 +50,7 @@ const parsePDF = async (file: File): Promise<Transaction[]> => {
         }
 
         transactions.push({
+          id: generateId(),
           date: dateString,
           description,
           amount,
