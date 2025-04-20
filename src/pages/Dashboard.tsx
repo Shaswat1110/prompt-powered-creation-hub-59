@@ -176,12 +176,7 @@ const Dashboard = () => {
           trendValue={monthlyIncome > 0 ? `${Math.abs(remainingBudgetPercentage).toFixed(1)}% of income` : "Set monthly income"}
           description="Available to spend this month"
         />
-        <StatCard
-          title="Net Balance"
-          value={formatCurrency(totalIncome - totalSpent)}
-          icon={totalIncome > totalSpent ? <TrendingUp className="h-5 w-5" /> : <TrendingDown className="h-5 w-5" />}
-          description={`For ${currentMonthName}`}
-        />
+        {/* Net Balance card removed as per user request */}
         <StatCard
           title="Transactions"
           value={transactions.length.toString()}
