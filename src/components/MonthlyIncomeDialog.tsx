@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useTransactions } from "@/context/TransactionContext";
 import { useToast } from "@/components/ui/use-toast";
-import { DollarSign } from "lucide-react";
+import { IndianRupee } from "lucide-react";
 
 const MonthlyIncomeDialog = () => {
   const { monthlyIncome, setMonthlyIncome } = useTransactions();
@@ -43,7 +43,7 @@ const MonthlyIncomeDialog = () => {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" className="mb-4">
-          <DollarSign className="mr-2 h-4 w-4" />
+          <IndianRupee className="mr-2 h-4 w-4" />
           Set Monthly Income
         </Button>
       </DialogTrigger>
