@@ -1,5 +1,6 @@
 
-// We update imports and integrate SampleDataDownloader instead of SampleDataGenerator
+// Modified FileUploadCard to support CSV, QFX, OFX, and PDF parsing with dedicated parsers
+
 import React, { useState } from "react";
 import { FileUp } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,6 +8,9 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useTransactions } from "@/context/TransactionContext";
 import { parseCSV } from "@/utils/csvParser";
+import parseQFX from "@/utils/qfxParser";
+import parseOFX from "@/utils/ofxParser";
+import parsePDF from "@/utils/pdfParser";
 import FileUploadArea from "./FileUploadArea";
 import ConnectionProgress from "./ConnectionProgress";
 import SupportedFormats from "./SupportedFormats";
@@ -25,7 +29,6 @@ const FileUploadCard: React.FC = () => {
     }
   };
 
-  // Updated to handle CSV parsing only; show error for other formats for now
   const handleFileUpload = async (file: File) => {
     const fileExtension = file.name.split('.').pop()?.toLowerCase() || '';
     if (!["csv", "qfx", "ofx", "pdf"].includes(fileExtension)) {
@@ -33,44 +36,62 @@ const FileUploadCard: React.FC = () => {
       return;
     }
 
-    if (fileExtension === "csv") {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        if (event.target?.result) {
-          const content = event.target.result as string;
-          try {
-            const transactions = parseCSV(content);
-
-            if (transactions.length === 0) {
-              toast.error("No valid transactions found in the CSV file");
-              return;
-            }
-
-            let successCount = 0;
-            transactions.forEach(transaction => {
-              try {
-                addTransaction(transaction);
-                successCount++;
-              } catch (err) {
-                console.error("Failed to add transaction:", transaction, err);
-              }
-            });
-
-            toast.success(`Successfully imported ${successCount} transactions`);
-          } catch (error) {
-            console.error("Error processing CSV file:", error);
-            toast.error("Failed to process CSV file. Please check the format.");
+    const readFileAsText = (file: File): Promise<string> => {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          if (event.target?.result) {
+            resolve(event.target.result as string);
+          } else {
+            reject("File read error");
           }
+        };
+        reader.onerror = () => reject("File read error");
+        reader.readAsText(file);
+      });
+    };
+
+    try {
+      const content = await readFileAsText(file);
+      let transactions = [];
+
+      switch (fileExtension) {
+        case "csv":
+          transactions = parseCSV(content);
+          break;
+        case "qfx":
+          transactions = parseQFX(content);
+          break;
+        case "ofx":
+          transactions = parseOFX(content);
+          break;
+        case "pdf":
+          transactions = await parsePDF(file);
+          break;
+        default:
+          toast.error(`Import for .${fileExtension} files is not supported yet.`);
+          return;
+      }
+
+      if (!transactions || transactions.length === 0) {
+        toast.error("No valid transactions found in the file");
+        return;
+      }
+
+      let successCount = 0;
+      transactions.forEach(transaction => {
+        try {
+          addTransaction(transaction);
+          successCount++;
+        } catch (err) {
+          console.error("Failed to add transaction:", transaction, err);
         }
-      };
+      });
 
-      reader.onerror = () => {
-        toast.error("Error reading CSV file");
-      };
-
-      reader.readAsText(file);
-    } else {
-      toast.error(`Import for .${fileExtension} files is not supported yet. Please upload CSV.`);
+      toast.success(`Successfully imported ${successCount} transactions`);
+    } catch (error) {
+      console.error("Error processing file:", error);
+      toast.error("Failed to process file. Please check the format.");
     }
   };
 
