@@ -1,4 +1,5 @@
 
+// We update imports and integrate SampleDataDownloader instead of SampleDataGenerator
 import React, { useState } from "react";
 import { FileUp } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,7 +10,7 @@ import { parseCSV } from "@/utils/csvParser";
 import FileUploadArea from "./FileUploadArea";
 import ConnectionProgress from "./ConnectionProgress";
 import SupportedFormats from "./SupportedFormats";
-import SampleDataGenerator from "./SampleDataGenerator";
+import SampleDataDownloader from "./SampleDataDownloader";
 
 const FileUploadCard: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
@@ -24,49 +25,53 @@ const FileUploadCard: React.FC = () => {
     }
   };
 
+  // Updated to handle CSV parsing only; show error for other formats for now
   const handleFileUpload = async (file: File) => {
-    if (!file.name.toLowerCase().endsWith('.csv')) {
-      toast.error("Please upload a CSV file");
+    const fileExtension = file.name.split('.').pop()?.toLowerCase() || '';
+    if (!["csv", "qfx", "ofx", "pdf"].includes(fileExtension)) {
+      toast.error("Unsupported file type. Allowed: CSV, QFX, OFX, PDF");
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      if (event.target?.result) {
-        const content = event.target.result as string;
-        
-        try {
-          const transactions = parseCSV(content);
-          
-          if (transactions.length === 0) {
-            toast.error("No valid transactions found in the file");
-            return;
-          }
+    if (fileExtension === "csv") {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          const content = event.target.result as string;
+          try {
+            const transactions = parseCSV(content);
 
-          // Add each valid transaction to the store
-          let successCount = 0;
-          transactions.forEach(transaction => {
-            try {
-              addTransaction(transaction);
-              successCount++;
-            } catch (err) {
-              console.error("Failed to add transaction:", transaction, err);
+            if (transactions.length === 0) {
+              toast.error("No valid transactions found in the CSV file");
+              return;
             }
-          });
 
-          toast.success(`Successfully imported ${successCount} transactions`);
-        } catch (error) {
-          console.error("Error processing file:", error);
-          toast.error("Failed to process file. Please check the format.");
+            let successCount = 0;
+            transactions.forEach(transaction => {
+              try {
+                addTransaction(transaction);
+                successCount++;
+              } catch (err) {
+                console.error("Failed to add transaction:", transaction, err);
+              }
+            });
+
+            toast.success(`Successfully imported ${successCount} transactions`);
+          } catch (error) {
+            console.error("Error processing CSV file:", error);
+            toast.error("Failed to process CSV file. Please check the format.");
+          }
         }
-      }
-    };
+      };
 
-    reader.onerror = () => {
-      toast.error("Error reading file");
-    };
-    
-    reader.readAsText(file);
+      reader.onerror = () => {
+        toast.error("Error reading CSV file");
+      };
+
+      reader.readAsText(file);
+    } else {
+      toast.error(`Import for .${fileExtension} files is not supported yet. Please upload CSV.`);
+    }
   };
 
   const handleUpload = () => {
@@ -117,7 +122,7 @@ const FileUploadCard: React.FC = () => {
           </Button>
 
           <SupportedFormats />
-          <SampleDataGenerator />
+          <SampleDataDownloader />
         </div>
       </CardContent>
     </Card>
@@ -125,3 +130,4 @@ const FileUploadCard: React.FC = () => {
 };
 
 export default FileUploadCard;
+
